@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse 
 from django import forms
 from django.forms import modelform_factory
@@ -43,6 +43,7 @@ def submit_new_deck(request):
         context['deck'] = form.save()
     else:
         print("form error")
+        return redirect('home')
 
     
     return render(request, 'base/partials/deck_row.html', context)

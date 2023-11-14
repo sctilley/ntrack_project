@@ -2,16 +2,11 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <h1>Register</h1>
-    <div>
+    <div class="container">
         <form method="post">
             {% csrf_token %}
-            <fieldset>
-                {{ form|crispy }}
-            </fieldset>
-            <div>
-                <button type="submit">Sign Up</button>
-            </div>
-            
+            {{ form|crispy }}
+            <button type="submit">Sign Up</button>
         </form>
     </div>
 
