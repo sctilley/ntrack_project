@@ -1,25 +1,38 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "Python: Django",
-            "type": "python",
-            "request": "launch",
-            "program": "c:\\Users\\sctilley\\Desktop\\tracker\\ntrack_project\\manage.py",
-            "justMyCode": true,
-            "args": [
-                "runserver",
-            ],
-            "django": true,
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Open base.html",
-            "url": "http://localhost:8000"
-        }
+      {
+        "name": "Django_Start",
+        // "python": "c:\\Users\\sctilley\\Desktop\\tracker\\ntrack_project\\venv\\Scripts\\python",
+        "type": "python",
+        "request": "launch",
+        "program": "c:\\Users\\sctilley\\Desktop\\tracker\\ntrack_project\\manage.py",
+        "django": true,
+        "justMyCode": true,
+        "args": [
+          "runserver"
+        ],
+        "preLaunchTask": "LiveReload",
+        "postDebugTask": "StopTasks"
+      },
+      {
+        "name": "Launch_Chrome",
+        "request": "launch",
+        "type": "chrome",
+        "runtimeArgs": [
+          "--incognito",
+        ],
+        "url": "http://127.0.0.1:8000/",
+      },
+    ],
+    "compounds": [
+      {
+        "name": "Runserver + Livereload + Chrome",
+        "configurations": [
+          "Django_Start",
+          "Launch_Chrome"
+        ],
+        "stopAll": true
+      }
     ]
-}
+  }
