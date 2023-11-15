@@ -3,17 +3,15 @@
     "configurations": [
       {
         "name": "Django_Start",
-        // "python": "c:\\Users\\sctilley\\Desktop\\tracker\\ntrack_project\\venv\\Scripts\\python",
+        "python": "C:\\Users\\sam.tilley\\Desktop\\projects\\ntrack\\ntrack_project\\venv\\Scripts\\python",
         "type": "python",
         "request": "launch",
-        "program": "c:\\Users\\sctilley\\Desktop\\tracker\\ntrack_project\\manage.py",
+        "program": "manage.py",
         "django": true,
         "justMyCode": true,
         "args": [
           "runserver"
         ],
-        "preLaunchTask": "LiveReload",
-        "postDebugTask": "StopTasks"
       },
       {
         "name": "Launch_Chrome",
@@ -27,7 +25,7 @@
     ],
     "compounds": [
       {
-        "name": "Runserver + Livereload + Chrome",
+        "name": "xxx",
         "configurations": [
           "Django_Start",
           "Launch_Chrome"
