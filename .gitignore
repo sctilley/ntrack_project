@@ -262,6 +262,8 @@ pyrightconfig.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
+ntrack_project.code-workspace
+
 # Local History for Visual Studio Code
 .history/
 
