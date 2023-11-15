@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse 
 from django import forms
 from django.forms import modelform_factory
@@ -11,6 +12,7 @@ def home(request):
     }
     return render(request, "base/home.html", context)
 
+@login_required
 def decks(request):
     decks_list = Deck.objects.all().order_by('-dateCreated')
     print(decks_list)
