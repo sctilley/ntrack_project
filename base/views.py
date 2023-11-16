@@ -1,16 +1,33 @@
+from multiprocessing import context
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse 
 from django import forms
 from django.forms import modelform_factory
-from .models import Deck
+from .models import Deck, League
 from .forms import DeckForm
+
+def test(request):
+    context = {
+
+    }
+
+    return render(request, "base/test.html", context)
+
 
 def home(request):
     context = {
 
     }
     return render(request, "base/home.html", context)
+
+def get_leagues_list(request):
+    print("leagues got it")
+    leagues_list = League.objects.all().order_by('-dateCreated')
+    context = {
+        "leagues": leagues_list
+    }
+    return render(request, 'base/partials/leagues_list.html', context)
 
 @login_required
 def decks(request):
@@ -78,3 +95,4 @@ def edit_deck_submit(request, deck_pk):
             return render(request, 'base/partials/edit_deck.html', context)
         
     return render(request, 'base/partials/deck_row.html', context)
+
