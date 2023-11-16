@@ -20,6 +20,14 @@ def home(request):
     }
     return render(request, "base/home.html", context)
 
+def get_leagues_accordion(request):
+    print("leagues got it")
+    leagues_list = League.objects.all().order_by('-dateCreated')
+    context = {
+        "leagues": leagues_list
+    }
+    return render(request, 'base/partials/league_accordion.html', context)
+
 def get_leagues_list(request):
     print("leagues got it")
     leagues_list = League.objects.all().order_by('-dateCreated')

@@ -2,6 +2,8 @@
 {% block content %}
     <h1>Home Success!!!</h1>
 
+
+
     <div class="container">
         <h1>Leagues: </h1>
         <button class='btn' hx-get="{% url 'add_deck' %}" hx-target="next tbody" hx-swap="afterbegin">
@@ -10,16 +12,11 @@
         </button>
         <div id="query_result" hx-target="this" hx-swap="innerHTML" hx-get="{% url 'get_leagues_list' %}" hx-trigger="load"></div>
     </div>
-
-    <div class="d-grid gap-3">
-        <div class="p-2 bg-light border">Grid item 1</div>
-        <div class="p-2 bg-light border">Grid item 2</div>
-        <div class="p-2 bg-light border">Grid item 3</div>
-    </div>
-
-    <h2>Going to add some text but now it's diffxtt </h2>
     <div class="container">
-        new content and I keep writing more stuff. And now I have all three working together. Wow
+        <div id="query_result" hx-target="this" hx-swap="innerHTML" hx-get="{% url 'get_leagues_accordion' %}" hx-trigger="load"></div>
     </div>
+
+
+
 
 {% endblock content %}

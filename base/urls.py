@@ -12,4 +12,5 @@ urlpatterns = [
     path('<int:deck_pk>/edit_deck', views.edit_deck, name='edit_deck'),
     path('<int:deck_pk>/edit_deck_submit', views.edit_deck_submit, name='edit_deck_submit'),
     path('get_leagues_list', views.get_leagues_list, name='get_leagues_list'),
+    path('get_leagues_accordion', views.get_leagues_accordion, name='get_leagues_accordion')
 ]
