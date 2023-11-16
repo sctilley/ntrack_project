@@ -1,4 +1,7 @@
 from django.db import models
+from django.urls import reverse
+from django.contrib.auth.models import User
+
 
 # Create your models here.
 from django.db import models
@@ -32,3 +35,38 @@ class Deck(models.Model):
     def __str__(self):
         return str(self.name)
     
+class League(models.Model):
+    mtgFormat = models.ForeignKey(MtgFormat, null=True, on_delete=models.CASCADE, related_name="mformat")
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    dateCreated = models.DateTimeField(default=timezone.now)
+    myDeck = models.ForeignKey(Deck, null=True, on_delete=models.CASCADE, related_name="mydeckname")
+    isFinished = models.BooleanField('finished', default=False)
+
+    def __str__(self):
+        return f'{self.mtgFormat} League with {self.myDeck} by {self.user} on {self.dateCreated}'
+
+    def get_absolute_url(self):
+        return reverse('leaguedetail', kwargs={'pk': self.pk})
+
+
+
+class Match(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    dateCreated = models.DateTimeField(default=timezone.now, null=True)
+    mtgFormat = models.ForeignKey(MtgFormat, null=True, on_delete=models.CASCADE, related_name="mtgFormat")
+    myDeck = models.ForeignKey(Deck, null=True, on_delete=models.CASCADE, related_name="mydeck")
+
+    theirname = models.CharField(null=True, max_length=100)
+    theirArchetype = models.ForeignKey(Archetype, verbose_name="Their Archetype", null=True, on_delete=models.CASCADE, related_name="theirarchetype")
+    theirDeck = models.ForeignKey(Deck, verbose_name="Their Deck", null=True, on_delete=models.CASCADE, related_name="theirdeck")
+
+    inLeagueNum = models.IntegerField(null=True)
+    game1 = models.BooleanField(verbose_name='Win', default=False, help_text="win")
+    game2 = models.BooleanField(verbose_name='Win', default=False)
+    game3 = models.BooleanField(verbose_name='Win', null=True, default=None)
+    didjawin = models.BooleanField('Match Win', default=False)
+
+    league = models.ForeignKey(League, null=True, on_delete=models.CASCADE, related_name="matches")
+
+    def __str__(self):
+        return f'Match vs: {self.theirname} by {self.user} on {self.dateCreated} (league id {self.league.pk})'
