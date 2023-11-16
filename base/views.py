@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse 
 from django import forms
 from django.forms import modelform_factory
-from .models import Deck, League
+from .models import Deck, League, Match
 from .forms import DeckForm
 
 def test(request):
@@ -21,12 +21,19 @@ def home(request):
     return render(request, "base/home.html", context)
 
 def get_leagues_accordion(request):
-    print("leagues got it")
     leagues_list = League.objects.all().order_by('-dateCreated')
     context = {
         "leagues": leagues_list
     }
     return render(request, 'base/partials/league_accordion.html', context)
+
+def get_matches_table(request):
+    print("matches table got it")
+    matches_list = Match.objects.all().order_by('-dateCreated')
+    context = {
+        "matches": matches_list
+    }
+    return render(request, 'base/partials/matches_table.html', context)
 
 def get_leagues_list(request):
     print("leagues got it")
