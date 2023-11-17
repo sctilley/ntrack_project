@@ -8,7 +8,7 @@
         </h2>
         <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
           <div class="accordion-body">
-            <div id="hxmtarget{{ forloop.counter }}" hx-trigger="revealed" hx-target="this" hx-swap="innerHTML" hx-get="{% url 'get_matches_table' %}">
+            <div id="hxmtarget{{ forloop.counter }}" hx-trigger="revealed" hx-target="this" hx-swap="innerHTML" hx-get="{% url 'get_matches_table' league.pk %}">
 
             </div>
             

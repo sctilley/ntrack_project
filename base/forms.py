@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelform_factory
-from .models import Deck
+from .models import Deck, League
 
 class DeckForm(forms.ModelForm):
     class Meta:
@@ -9,4 +9,12 @@ class DeckForm(forms.ModelForm):
             'name',
             'mtgFormat',
             'archetype'
+        )
+
+class LeagueForm(forms.ModelForm):
+    class Meta:
+        model = League
+        fields = (
+            'mtgFormat',
+            'myDeck'
         )

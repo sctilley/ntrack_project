@@ -4,7 +4,13 @@ from django.http import HttpResponse
 from django import forms
 from django.forms import modelform_factory
 from .models import Deck, League, Match
-from .forms import DeckForm
+from .forms import DeckForm, LeagueForm
+
+def add_league(request):
+    context = {
+        'lform':LeagueForm()
+    }
+    return render(request, 'base/partials/add_league.html', context)
 
 def test(request):
     context = {
@@ -15,6 +21,27 @@ def test(request):
 
 
 def home(request):
+    user = request.User
+    lform = LeagueForm()
+    print("home here")
+    if request.method == 'POST':
+        print("request.post trigger", request.POST)
+        lform = LeagueForm(request.POST)
+        if lform.is_valid():
+            new_league = lform.save(commit=False)
+            new_league.user = request.user
+            new_league.save()
+
+            user.profile.recentFormat = new_league.recentFormat
+            user.profile.recentDeck = new_league.recentDeck
+            user.profile.save()
+
+            newleague = League.objects.latest('dateCreated')
+            print("new league: ", newleague)
+
+
+        else:
+            print("errors: ", lform.errors)
     context = {
 
     }
@@ -27,21 +54,29 @@ def get_leagues_accordion(request):
     }
     return render(request, 'base/partials/league_accordion.html', context)
 
-def get_matches_table(request):
-    print("matches table got it")
-    matches_list = Match.objects.all().order_by('-dateCreated')
+def get_matches_table(request, league_pk):
+    league = League.objects.get(pk=league_pk)
+    matches_list = league.matches.all()
     context = {
         "matches": matches_list
     }
     return render(request, 'base/partials/matches_table.html', context)
 
-def get_leagues_list(request):
+def get_league_current(request):
     print("leagues got it")
     leagues_list = League.objects.all().order_by('-dateCreated')
+
+    current_league = League.objects.latest('dateCreated')
+    matches_list = current_league.matches.all()
+    
+
+
+
     context = {
-        "leagues": leagues_list
+        "cLeague": current_league,
+        "matches": matches_list
     }
-    return render(request, 'base/partials/leagues_list.html', context)
+    return render(request, 'base/partials/league_current.html', context)
 
 @login_required
 def decks(request):
