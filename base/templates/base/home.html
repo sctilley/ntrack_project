@@ -1,14 +1,16 @@
 {% extends 'base/base.html' %}
 {% block content %}
-    <h1>Home Success!!!</h1>
-
-    <div class="container" id="newltarg">
-        
-        <button class='btn' hx-get="{% url 'add_league' %}" hx-target="#newltarg">
+    <h1>Home Success!!</h1>
+    <div class="container" id="newleague">
+        <button class='btn' hx-get="{% url 'add_league' %}" hx-target="#newleague">
             <svg class="bi bi-plus" width="32" height="32"><use xlink:href="#plus"></svg>
-            <small>add league</small>
+            <small>start new league</small>
         </button>
-        <!-- <div id="query_result" hx-target="this" hx-swap="innerHTML" hx-get="{% url 'get_league_current' %}" hx-trigger="load"></div> -->
+    </div>
+
+
+    <div class="container" id="newltarg"> 
+        <div id="query_result" hx-target="this" hx-swap="innerHTML" hx-get="{% url 'get_league_current' %}" hx-trigger="load"></div>
     </div>
     <h2>Past Leagues: </h2>
     <div class="container">

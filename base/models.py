@@ -56,7 +56,7 @@ class Match(models.Model):
     mtgFormat = models.ForeignKey(MtgFormat, null=True, on_delete=models.CASCADE, related_name="mtgFormat")
     myDeck = models.ForeignKey(Deck, null=True, on_delete=models.CASCADE, related_name="mydeck")
 
-    theirname = models.CharField(null=True, max_length=100)
+    theirName = models.CharField(null=True, max_length=100)
     theirArchetype = models.ForeignKey(Archetype, verbose_name="Their Archetype", null=True, on_delete=models.CASCADE, related_name="theirarchetype")
     theirDeck = models.ForeignKey(Deck, verbose_name="Their Deck", null=True, on_delete=models.CASCADE, related_name="theirdeck")
 
@@ -64,9 +64,9 @@ class Match(models.Model):
     game1 = models.BooleanField(verbose_name='Win', default=False, help_text="win")
     game2 = models.BooleanField(verbose_name='Win', default=False)
     game3 = models.BooleanField(verbose_name='Win', null=True, default=None)
-    didjawin = models.BooleanField('Match Win', default=False)
+    didjawin = models.BooleanField('Match Win', null=True, default=None)
 
     league = models.ForeignKey(League, null=True, on_delete=models.CASCADE, related_name="matches")
 
     def __str__(self):
-        return f'Match vs: {self.theirname} by {self.user} on {self.dateCreated} (league id {self.league.pk})'
+        return f'Match vs: {self.theirName} by {self.user} on {self.dateCreated} (league id {self.league.pk})'

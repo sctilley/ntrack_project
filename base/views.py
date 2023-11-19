@@ -4,13 +4,23 @@ from django.http import HttpResponse
 from django import forms
 from django.forms import modelform_factory
 from .models import Deck, League, Match
-from .forms import DeckForm, LeagueForm
+from .forms import DeckForm, LeagueForm, MatchForm
 
-def add_league(request):
+def clear_match(request, match_pk):
+    match = Match.objects.get(pk=match_pk)
+    match.theirName = None
+    match.theirDeck = None
+    match.theirArchetype = None
+    match.game1 = False
+    match.game2 = False
+    match.game3 = None
+    match.save()
     context = {
-        'lform':LeagueForm()
+        'match':match
     }
-    return render(request, 'base/partials/add_league.html', context)
+    print("match cleared: ", match)
+
+    return render(request, 'base/partials/match_row.html', context)
 
 def test(request):
     context = {
@@ -19,11 +29,71 @@ def test(request):
 
     return render(request, "base/test.html", context)
 
+def edit_match(request, match_pk):
+    match = Match.objects.get(pk=match_pk)
+    context = {}
+    context['match'] = match
+    context['form'] = MatchForm(initial={
+        'theirName':match.theirName,
+        'theirArchetype': match.theirArchetype,
+        'theirDeck': match.theirDeck,
+        'game1': match.game1,
+        'game2': match.game2,
+        'game3': match.game3,
+    })
+    return render(request, 'base/partials/edit_match.html', context)
+
+def edit_match_submit(request, match_pk):
+    context = {}
+    match = Match.objects.get(pk=match_pk)
+    context['match'] = match
+    if request.method == 'POST':
+        print("post here22")
+        form = MatchForm(request.POST, instance=match)
+        if form.is_valid():
+            print("form valid")
+            new_match = form.save(commit=False)
+
+            if new_match.game1 == 1:
+                if new_match.game2 == 1:
+                    new_match.didjawin = 1
+                elif new_match.game3 == 1:
+                    new_match.didjawin = 1
+                else:
+                    new_match.didjawin = 0
+            elif new_match.game2 == 1:
+                if new_match.game3 == 1:
+                    new_match.didjawin = 1
+            else:
+                new_match.didjawin = 0
+            
+            new_match.save()
+            league = League.objects.get(pk=new_match.league_id)
+            total = 0
+            for match in league.matches.all():
+                print(match.didjawin)
+                if match.didjawin == True or match.didjawin == False:
+                    total += 1
+                    print (total)
+                else:
+                    total += 0
+            print("sum total: ", total)        
+            if total == 5:
+                league.isFinished = True
+                league.save()
+                
+        else:
+            print("form not valid")
+            return render(request, 'base/partials/match_row.html', context)
+
+    print("cancel button") 
+    return render(request, 'base/partials/match_row.html', context)
+
 
 def home(request):
-    user = request.User
+    user = request.user
     lform = LeagueForm()
-    print("home here")
+
     if request.method == 'POST':
         print("request.post trigger", request.POST)
         lform = LeagueForm(request.POST)
@@ -32,12 +102,22 @@ def home(request):
             new_league.user = request.user
             new_league.save()
 
-            user.profile.recentFormat = new_league.recentFormat
-            user.profile.recentDeck = new_league.recentDeck
+            user.profile.recentFormat = new_league.mtgFormat
+            user.profile.recentDeck = new_league.myDeck
             user.profile.save()
 
             newleague = League.objects.latest('dateCreated')
             print("new league: ", newleague)
+
+            for i in range(1,6):
+                Match.objects.create(
+                    league_id=new_league.pk,
+                    user=user,
+                    mtgFormat=new_league.mtgFormat,
+                    myDeck=new_league.myDeck,
+                    inLeagueNum=i,
+                    didjawin=None
+                )
 
 
         else:
@@ -47,12 +127,7 @@ def home(request):
     }
     return render(request, "base/home.html", context)
 
-def get_leagues_accordion(request):
-    leagues_list = League.objects.all().order_by('-dateCreated')
-    context = {
-        "leagues": leagues_list
-    }
-    return render(request, 'base/partials/league_accordion.html', context)
+
 
 def get_matches_table(request, league_pk):
     league = League.objects.get(pk=league_pk)
@@ -63,20 +138,49 @@ def get_matches_table(request, league_pk):
     return render(request, 'base/partials/matches_table.html', context)
 
 def get_league_current(request):
-    print("leagues got it")
     leagues_list = League.objects.all().order_by('-dateCreated')
 
     current_league = League.objects.latest('dateCreated')
     matches_list = current_league.matches.all()
-    
 
 
 
-    context = {
-        "cLeague": current_league,
-        "matches": matches_list
+    if current_league.isFinished == True:
+        context = {
+        'lform':LeagueForm()
     }
-    return render(request, 'base/partials/league_current.html', context)
+        return render(request, 'base/partials/add_league.html', context)
+    else:
+        context = {
+            "cLeague": current_league,
+            "matches": matches_list
+        }
+        return render(request, 'base/partials/current_matches.html', context)
+
+def add_league(request):
+    try:
+        current_league = League.objects.filter(user=request.user).latest('dateCreated')
+    except:
+        current_league = League.objects.none()
+
+    if current_league.isFinished == True:
+        context = {
+            'lform':LeagueForm()
+        }
+    else:
+        context = {
+
+        }
+
+
+    return render(request, 'base/partials/add_league.html', context)
+   
+def get_leagues_accordion(request):
+    leagues_list = League.objects.all().order_by('-dateCreated')
+    context = {
+        "leagues": leagues_list
+    }
+    return render(request, 'base/partials/league_accordion.html', context)
 
 @login_required
 def decks(request):

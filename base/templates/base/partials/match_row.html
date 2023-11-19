@@ -1,0 +1,20 @@
+<tr>
+    <td>{{ match.inLeagueNum }}.</td>
+    <td>{{ match.theirName }}</td>
+    <td>{{ match.theirDeck }}</td>
+    <td>{{ match.game1 }}</td>
+    <td>{{ match.game2 }}</td>
+    <td>{{ match.game3 }}</td>
+
+    {% if match.didjawin == 1 %}
+        <td>match win </td>
+    {% elif match.didjawin == 0 %}
+        <td>match loss</td>
+    {% else %}
+        <td>unplayed</td>
+    {% endif %}
+    <td>
+        <button class='btn' hx-get="{% url 'edit_match' match.pk %}" hx-target="closest tr" hx-swap="outerHTML"><svg class="bi bi-pencil" width="32" height="32"><use xlink:href="#pencil"></svg></button>
+            <button class='btn' hx-get="{% url 'clear_match' match.pk %}" hx-confirm="clear match data?" hx-target="closest tr" hx-swap="outerHTML" ><svg class="bi bi-trash3" width="32" height="32"><use xlink:href="#trash3"></svg></button>
+    </td>
+</tr>
