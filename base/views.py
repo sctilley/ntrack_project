@@ -53,6 +53,7 @@ def edit_match_submit(request, match_pk):
         if form.is_valid():
             print("form valid")
             new_match = form.save(commit=False)
+            print("request.POST:  ", request.POST)
 
             if new_match.game1 == 1:
                 if new_match.game2 == 1:
@@ -64,6 +65,8 @@ def edit_match_submit(request, match_pk):
             elif new_match.game2 == 1:
                 if new_match.game3 == 1:
                     new_match.didjawin = 1
+                else:
+                    new_match.didjawin = 0
             else:
                 new_match.didjawin = 0
             
@@ -71,13 +74,10 @@ def edit_match_submit(request, match_pk):
             league = League.objects.get(pk=new_match.league_id)
             total = 0
             for match in league.matches.all():
-                print(match.didjawin)
                 if match.didjawin == True or match.didjawin == False:
                     total += 1
-                    print (total)
                 else:
                     total += 0
-            print("sum total: ", total)        
             if total == 5:
                 league.isFinished = True
                 league.save()
@@ -146,10 +146,11 @@ def get_league_current(request):
 
 
     if current_league.isFinished == True:
-        context = {
-        'lform':LeagueForm()
-    }
-        return render(request, 'base/partials/add_league.html', context)
+        pass
+    #     context = {
+    #     'lform':LeagueForm()
+    # }
+    #     return render(request, 'base/partials/add_league.html', context)
     else:
         context = {
             "cLeague": current_league,

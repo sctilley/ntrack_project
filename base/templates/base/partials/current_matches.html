@@ -22,9 +22,9 @@
                 <td>{{ match.game2 }}</td>
                 <td>{{ match.game3 }}</td>
                 {% if match.didjawin == 1 %}
-                    <td>matchwin </td>
+                    <td>Win!</td>
                 {% elif match.didjawin == 0 %}
-                    <td>match loss</td>
+                    <td>loss :( </td>
                 {% else %}
                     <td>unplayed</td>
                 {% endif %}
