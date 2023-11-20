@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import modelform_factory
-from .models import Deck, League, Match, Archetype
+from .models import Deck, League, Match, Archetype, Flavor
 
 class MatchForm(forms.ModelForm):
     theirName = forms.CharField(required=True, max_length=100, label='test lable')
@@ -41,4 +41,18 @@ class LeagueForm(forms.ModelForm):
         fields = (
             'mtgFormat',
             'myDeck'
+        )
+
+class FlavorForm(forms.ModelForm):
+    name = forms.CharField(
+        label="varient name", widget=forms.TextInput(attrs={'class': 'redtest2'}))
+    isdefault = forms.BooleanField(label='Make Default Varient', required=False, widget=forms.CheckboxInput(
+        attrs={'class': 'largerCheckbox'}))
+
+    class Meta:
+        model = Flavor
+        fields = (
+            'deck',
+            'name',
+            'isdefault',
         )
