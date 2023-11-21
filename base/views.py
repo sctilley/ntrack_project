@@ -250,3 +250,12 @@ def edit_deck_submit(request, deck_pk):
         
     return render(request, 'base/partials/deck_row.html', context)
 
+# new decks table
+
+def decks_table(request):
+    print("new decks table")
+    decks_list = Deck.objects.all().order_by('-dateCreated')
+    context = {
+        "decks": decks_list
+    }
+    return render(request, 'base/partials/decks/decks_table.html', context)
