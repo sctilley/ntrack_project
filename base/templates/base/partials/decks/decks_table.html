@@ -13,6 +13,7 @@
                 <td>{{ deck.name }}</td>
                 <td>{{ deck.mtgFormat }}</td>
                 <td>{{ deck.archetype }}</td>
+                <td></td>
 
                 <td>
                     <button class='btn' hx-get="{% url 'edit_deck' deck.pk %}" hx-target="closest tr" hx-swap="outerHTML"><svg class="bi bi-pencil" width="32" height="32"><use xlink:href="#pencil"></svg></button>
@@ -21,6 +22,9 @@
             </tr>
             {% if deck.flavors.count > 1 %}
             <tr>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td>
                     
                     <table class="table">
