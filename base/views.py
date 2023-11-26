@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse 
 from django import forms
 from django.forms import modelform_factory
-from .models import Deck, League, Match
-from .forms import DeckForm, LeagueForm, MatchForm
+from .models import Deck, League, Match, Flavor, MtgFormat, Archetype
+from .forms import DeckForm, LeagueForm, MatchForm, FlavorForm, TestForm
+from django.db.models.functions import Lower
 
 def clear_match(request, match_pk):
     match = Match.objects.get(pk=match_pk)
@@ -14,6 +15,7 @@ def clear_match(request, match_pk):
     match.game1 = False
     match.game2 = False
     match.game3 = None
+    match.didjawin = None
     match.save()
     context = {
         'match':match
@@ -22,25 +24,50 @@ def clear_match(request, match_pk):
 
     return render(request, 'base/partials/match_row.html', context)
 
-def test(request):
+def testpost(request):
+    print(request.POST)
+    new_archname = request.POST.get('archselect')
+    postformat = request.POST.get('formatselect')
+
+    Archetype.objects.create(
+        name = new_archname,
+        mtgFormat_id = postformat
+    )
+
     context = {
 
+    }
+
+    return render(request, 'base/partials/testpart.html', context)
+
+
+def test(request):
+    mform = MatchForm()
+    fform = FlavorForm()
+    decks = Deck.objects.all()
+    mtgformats = MtgFormat.objects.all()
+
+    context = {
+        'mform': mform,
+        'fform': fform,
+        'decks': decks,
+        'mtgformats': mtgformats
     }
 
     return render(request, "base/test.html", context)
 
 def edit_match(request, match_pk):
     match = Match.objects.get(pk=match_pk)
-    context = {}
-    context['match'] = match
-    context['form'] = MatchForm(initial={
-        'theirName':match.theirName,
-        'theirArchetype': match.theirArchetype,
-        'theirDeck': match.theirDeck,
-        'game1': match.game1,
-        'game2': match.game2,
-        'game3': match.game3,
-    })
+    usernamelist = Match.objects.all().values("theirName").distinct().order_by(Lower("theirName"))
+    print(usernamelist)
+    decks = Deck.objects.all()
+    context = {
+        'match': match,
+        'decks': decks,
+        'usernamelist': usernamelist
+
+    }
+
     return render(request, 'base/partials/edit_match.html', context)
 
 def edit_match_submit(request, match_pk):
@@ -48,45 +75,66 @@ def edit_match_submit(request, match_pk):
     match = Match.objects.get(pk=match_pk)
     context['match'] = match
     if request.method == 'POST':
-        print("post here22")
-        form = MatchForm(request.POST, instance=match)
-        if form.is_valid():
-            print("form valid")
-            new_match = form.save(commit=False)
-            print("request.POST:  ", request.POST)
+        form = MatchForm()
+        print("post here22", request.POST)
+        match.theirName = request.POST.get('username')
+        decknflavor = request.POST.get('decknflavor')
+        if 'x' in decknflavor:
+            xxy = decknflavor.split("x")
+            print("yes x", xxy)
+            match.theirDeck_id = xxy[0]
+            match.theirFlavor_id = xxy[1]
 
-            if new_match.game1 == 1:
-                if new_match.game2 == 1:
-                    new_match.didjawin = 1
-                elif new_match.game3 == 1:
-                    new_match.didjawin = 1
-                else:
-                    new_match.didjawin = 0
-            elif new_match.game2 == 1:
-                if new_match.game3 == 1:
-                    new_match.didjawin = 1
-                else:
-                    new_match.didjawin = 0
-            else:
-                new_match.didjawin = 0
-            
-            new_match.save()
-            league = League.objects.get(pk=new_match.league_id)
-            total = 0
-            for match in league.matches.all():
-                if match.didjawin == True or match.didjawin == False:
-                    total += 1
-                else:
-                    total += 0
-            if total == 5:
-                league.isFinished = True
-                league.save()
-                
         else:
-            print("form not valid")
-            return render(request, 'base/partials/match_row.html', context)
+            match.theirDeck_id = request.POST.get('decknflavor')
+            match.theirFlavor = None
+            print("no x")
 
-    print("cancel button") 
+        if 'game1ch' in request.POST:
+            match.game1 = 1
+            if 'game2ch' in request.POST:
+                match.game2 = 1
+                match.game3 = None
+                match.didjawin = 1
+            elif 'game3ch' in request.POST:
+                match.game2 = 0
+                match.game3 = 1
+                match.didjawin = 1
+            else:
+                match.game2 = 0
+                match.game3 = 0
+                match.didjawin = 0 
+        elif 'game2ch' in request.POST:
+            match.game1 = 0 
+            if 'game3ch' in request.POST:
+                match.game3 = 1
+                match.didjawin = 1
+            else:
+                match.game3 = 0
+                match.didjawin = 0 
+        else:
+            match.game1 = 0
+            match.game2 = 0 
+            match.game3 = 0
+            match.didjawin = 0
+
+
+        match.save()
+        league = League.objects.get(pk=match.league_id)
+        total = 0
+        for match in league.matches.all():
+            if match.didjawin == True or match.didjawin == False:
+                total += 1
+            else:
+                total += 0
+        if total == 5:
+            league.isFinished = True
+            league.save()
+                
+    else:
+        print("cancel button") 
+        return render(request, 'base/partials/match_row.html', context)
+    
     return render(request, 'base/partials/match_row.html', context)
 
 
@@ -143,20 +191,14 @@ def get_league_current(request):
     current_league = League.objects.latest('dateCreated')
     matches_list = current_league.matches.all()
 
-
-
     if current_league.isFinished == True:
         pass
-    #     context = {
-    #     'lform':LeagueForm()
-    # }
-    #     return render(request, 'base/partials/add_league.html', context)
     else:
         context = {
             "cLeague": current_league,
             "matches": matches_list
         }
-        return render(request, 'base/partials/current_matches.html', context)
+    return render(request, 'base/partials/current_matches.html', context)
 
 def add_league(request):
     try:
@@ -200,27 +242,6 @@ def get_decks_list(request):
     }
     return render(request, 'base/partials/decks_list.html', context)
 
-def add_deck(request):
-    context = {
-        'form':DeckForm()
-    }
-    return render(request, 'base/partials/add_deck.html', context)
-
-def submit_new_deck(request):
-    form = DeckForm(request.POST)
-    context = {
-        'form':form
-    }
-
-    if form.is_valid():
-        context['deck'] = form.save()
-    else:
-        print("form error")
-        return redirect('home')
-
-    
-    return render(request, 'base/partials/deck_row.html', context)
-
 def delete_deck(request, deck_pk):
     deck = Deck.objects.get(pk=deck_pk)
     deck.delete()
@@ -235,7 +256,7 @@ def edit_deck(request, deck_pk):
         'mtgFormat': deck.mtgFormat,
         'archetype': deck.archetype,
     })
-    return render(request, 'base/partials/edit_deck.html', context)
+    return render(request, 'base/partials/decks/edit_deck.html', context)
 
 def edit_deck_submit(request, deck_pk):
     context = {}
@@ -246,9 +267,9 @@ def edit_deck_submit(request, deck_pk):
         if form.is_valid():
             form.save()
         else:
-            return render(request, 'base/partials/edit_deck.html', context)
+            return render(request, 'base/partials/decks/edit_deck.html', context)
         
-    return render(request, 'base/partials/deck_row.html', context)
+    return render(request, 'base/partials/decks/deck_row.html', context)
 
 # new decks table
 
@@ -259,3 +280,82 @@ def decks_table(request):
         "decks": decks_list
     }
     return render(request, 'base/partials/decks/decks_table.html', context)
+
+def add_deck(request):
+    context = {
+        'form':DeckForm()
+    }
+    return render(request, 'base/partials/decks/add_deck.html', context)
+
+def submit_new_deck(request):
+    form = DeckForm(request.POST)
+    context = {
+        'form':form
+    }
+
+    if form.is_valid():
+        context['deck'] = form.save()
+    else:
+        print("form error")
+        return render(request, 'base/partials/decks/add_deck.html', context)
+    return render(request, 'base/partials/decks/deck_row.html', context)
+
+def cancel_add_deck(request):
+    return HttpResponse()
+
+    
+def add_varient(request, deck_pk):
+    print("add varient")
+    context = {
+        'form':FlavorForm(initial={'deck': deck_pk})
+    }
+    return render(request, 'base/partials/decks/add_flavor.html', context)
+
+def submit_new_flavor(request):
+    form = FlavorForm(request.POST)
+    context = {
+        'form':form
+    }
+
+    if form.is_valid():
+        new_flavor = form.save(commit=False)
+        if new_flavor.isdefault == True:
+            print("to do logic")
+            Flavor.objects.all().update(isdefault=False)
+            new_flavor.save()
+        else:
+            new_flavor.save()
+        context['flavor'] = new_flavor
+    else:
+        print("form error")
+        return render(request, 'base/partials/decks/new_varient.html', context)
+    return render(request, 'base/partials/decks/new_varient.html', context)
+
+def edit_flavor(request, flavor_pk):
+    flavor = Flavor.objects.get(pk=flavor_pk)
+    context = {}
+    context['flavor'] = flavor
+    context['form'] = FlavorForm(initial={
+        'name':flavor.name,
+        'deck': flavor.deck,
+        'isdefault': flavor.isdefault,
+    })
+    return render(request, 'base/partials/decks/edit_flavor.html', context)
+
+def edit_flavor_submit(request, flavor_pk):
+    context = {}
+    flavor = Flavor.objects.get(pk=flavor_pk)
+    context['flavor'] = flavor
+    if request.method == 'POST':
+        form = FlavorForm(request.POST, instance=flavor)
+        if form.is_valid():
+            form.save()
+        else:
+            return render(request, 'base/partials/decks/edit_flavor.html', context)
+        
+    return render(request, 'base/partials/decks/flavor_row.html', context)
+
+def delete_flavor(request, flavor_pk):
+    flavor = Flavor.objects.get(pk=flavor_pk)
+    flavor.delete()
+    return HttpResponse()

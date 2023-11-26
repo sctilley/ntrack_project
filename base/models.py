@@ -43,13 +43,14 @@ class Flavor(models.Model):
     isdefault = models.BooleanField('default', default=False)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
     
 class League(models.Model):
     mtgFormat = models.ForeignKey(MtgFormat, null=True, on_delete=models.CASCADE, related_name="mformat")
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     dateCreated = models.DateTimeField(default=timezone.now)
-    myDeck = models.ForeignKey(Deck, null=True, on_delete=models.CASCADE, related_name="mydeckname")
+    myDeck = models.ForeignKey(Deck, null=True, on_delete=models.CASCADE, related_name="mydeckl")
+    myFlavor = models.ForeignKey(Flavor, null=True, on_delete=models.CASCADE, related_name="myflavorl")
     isFinished = models.BooleanField('finished', default=False)
 
     def __str__(self):
@@ -69,6 +70,7 @@ class Match(models.Model):
     theirName = models.CharField(null=True, max_length=100)
     theirArchetype = models.ForeignKey(Archetype, verbose_name="Their Archetype", null=True, on_delete=models.CASCADE, related_name="theirarchetype")
     theirDeck = models.ForeignKey(Deck, verbose_name="Their Deck", null=True, on_delete=models.CASCADE, related_name="theirdeck")
+    theirFlavor = models.ForeignKey(Flavor, verbose_name="Thier Flavor", null=True, on_delete=models.CASCADE, related_name="theirflavors")
 
     inLeagueNum = models.IntegerField(null=True)
     game1 = models.BooleanField(verbose_name='Win', default=False, help_text="win")

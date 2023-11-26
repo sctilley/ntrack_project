@@ -1,0 +1,60 @@
+{% extends 'base/base.html' %}
+{% block content %}
+    <h1>Test Page!</h1>
+    <div class="container mb-4">
+      <form method="post", action="">
+        <tr>
+          <td>
+              {{ match.inLeagueNum}}.
+          </td>
+          <td>{{ form.theirName }}
+              {{ form.theirName.errors}}
+          </td>
+          <td>
+              {{ form.theirDeck }}
+              {{ form.theirDeck.errors }}
+              <datalist id="id_theirDeck">
+                {% for deck in decks %}
+                  {% if deck.flavors.count > 0 %}
+                    <option value="{{deck.id}}">{{deck.name}}with flavor</option>
+                  {% else %}
+                    <option value="{{deck.id}}">{{deck.name}}</option>
+                  {% endif %}
+                {% endfor %}
+              </datalist>
+          </td>
+          <td>
+              {{ form.game1 }}
+              {{ form.game1.errors }}
+          </td>
+          <td>
+              {{ form.game2 }}
+              {{ form.game2.errors }}
+          </td>
+          <td>
+              {{ form.game3 }}
+              {{ form.game3.errors }}
+          </td>
+          <td><a href="#" hx-post="#" hx-target="closest tr" hx-swap="outerHTML" hx-include="closest tr" class="text-secondary"><svg class="bi bi-check-lg me-2" width="32" height="32"><use xlink:href="#checkmark"/></svg></a>
+          <a href="#" hx-get="#" hx-target="closest tr" hx-swap="outerHTML" class="text-secondary"><svg class="bi bi-x-lg me-2" width="32" height="32"><use xlink:href="#cancel"/></svg></a></td>
+      </tr>
+      </form>
+      
+    </div>
+
+    <select>
+      
+    </select>
+
+
+    <div class="d-grid gap-3">
+        <div class="p-2 bg-light border">Grid item 1</div>
+        <div class="p-2 bg-light border">Grid item 2</div>
+        <div class="p-2 bg-light border">Grid item 3</div>
+    </div>
+
+    <div class="container">
+        new content and I keep writing more stuff. And now I have all three working together. Wow
+    </div>
+
+{% endblock content %}

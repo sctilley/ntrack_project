@@ -3,9 +3,9 @@ from django.forms import modelform_factory
 from .models import Deck, League, Match, Archetype, Flavor
 
 class MatchForm(forms.ModelForm):
-    theirName = forms.CharField(required=True, max_length=100, label='test lable')
-    theirArchetype = forms.ModelChoiceField(queryset=Archetype.objects.filter(mtgFormat=1).order_by('name'), label='Archetype', required=False)
+    theirName = forms.CharField(required=True, max_length=100, label='Their Name')
     theirDeck = forms.ModelChoiceField(required=False, queryset=Deck.objects.filter(mtgFormat=1).order_by('name'), label='Their Deck')
+    theirFlavor = forms.ModelChoiceField(required=False, queryset=Flavor.objects.all().order_by('name'), label='Their Flavor')
     
     game1 = forms.BooleanField(label='one', required=False, widget=forms.CheckboxInput(
         attrs={'class': 'largerCheckbox', 'title': 'This is game 1. Tick the box if you won.'}))
@@ -18,8 +18,7 @@ class MatchForm(forms.ModelForm):
         model = Match
         fields = (
             'theirName',
-            'theirArchetype',
-            'theirDeck',
+            'theirFlavor',
             'game1',
             'game2',
             'game3',
@@ -44,6 +43,7 @@ class LeagueForm(forms.ModelForm):
         )
 
 class FlavorForm(forms.ModelForm):
+    forms.ModelChoiceField(queryset=Flavor.objects.all(), label='Variant', widget=forms.Select(attrs={'disabled': 'disabled'}))
     name = forms.CharField(
         label="varient name", widget=forms.TextInput(attrs={'class': 'redtest2'}))
     isdefault = forms.BooleanField(label='Make Default Varient', required=False, widget=forms.CheckboxInput(
@@ -56,3 +56,11 @@ class FlavorForm(forms.ModelForm):
             'name',
             'isdefault',
         )
+
+class TestForm(forms.Form):
+    CHOICES= (
+    ('ME', '1'),
+    ('YOU', '2'),
+    ('WE', '3'),
+    )    
+    field = forms.ChoiceField(choices=CHOICES)
