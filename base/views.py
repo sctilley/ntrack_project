@@ -1,3 +1,4 @@
+import imp
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse 
@@ -6,6 +7,7 @@ from django.forms import modelform_factory
 from .models import Deck, League, Match, Flavor, MtgFormat, Archetype
 from .forms import DeckForm, LeagueForm, MatchForm, FlavorForm, TestForm
 from django.db.models.functions import Lower
+from django.db.models import Count, Q
 
 def clear_match(request, match_pk):
     match = Match.objects.get(pk=match_pk)
@@ -219,9 +221,10 @@ def add_league(request):
     return render(request, 'base/partials/add_league.html', context)
    
 def get_leagues_accordion(request):
-    leagues_list = League.objects.all().order_by('-dateCreated')
+    leagues_list = League.objects.filter(user=request.user, isFinished=True)
+    leagues = leagues_list.annotate(wins=Count("matches", filter=Q(matches__didjawin=True))).order_by("-dateCreated")
     context = {
-        "leagues": leagues_list
+        "leagues": leagues
     }
     return render(request, 'base/partials/league_accordion.html', context)
 
