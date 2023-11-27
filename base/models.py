@@ -73,9 +73,9 @@ class Match(models.Model):
     theirFlavor = models.ForeignKey(Flavor, verbose_name="Thier Flavor", null=True, on_delete=models.CASCADE, related_name="theirflavors")
 
     inLeagueNum = models.IntegerField(null=True)
-    game1 = models.BooleanField(verbose_name='Win', default=False, help_text="win")
-    game2 = models.BooleanField(verbose_name='Win', default=False)
-    game3 = models.BooleanField(verbose_name='Win', null=True, default=None)
+    game1 = models.BooleanField(verbose_name='Win1', null=True, default=None, help_text="win")
+    game2 = models.BooleanField(verbose_name='Win2', null=True, default=None)
+    game3 = models.BooleanField(verbose_name='Win3', null=True, default=None)
     didjawin = models.BooleanField('Match Win', null=True, default=None)
 
     league = models.ForeignKey(League, null=True, on_delete=models.CASCADE, related_name="matches")

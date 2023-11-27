@@ -13,9 +13,10 @@ def clear_match(request, match_pk):
     match = Match.objects.get(pk=match_pk)
     match.theirName = None
     match.theirDeck = None
+    match.theirFlavor = None
     match.theirArchetype = None
-    match.game1 = False
-    match.game2 = False
+    match.game1 = None
+    match.game2 = None
     match.game3 = None
     match.didjawin = None
     match.save()
@@ -108,6 +109,7 @@ def edit_match_submit(request, match_pk):
                 match.didjawin = 0 
         elif 'game2ch' in request.POST:
             match.game1 = 0 
+            match.game2 = 1
             if 'game3ch' in request.POST:
                 match.game3 = 1
                 match.didjawin = 1

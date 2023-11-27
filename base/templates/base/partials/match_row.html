@@ -13,8 +13,8 @@
     {% else %}
         <td>unplayed</td>
     {% endif %}
-    <td>
-        <button class='btn' hx-get="{% url 'edit_match' match.pk %}" hx-target="closest tr" hx-swap="outerHTML"><svg class="bi bi-pencil" width="32" height="32"><use xlink:href="#pencil"></svg></button>
-        <button class='btn' hx-get="{% url 'clear_match' match.pk %}" hx-confirm="clear match data?" hx-target="closest tr" hx-swap="outerHTML" ><svg class="bi bi-trash3" width="32" height="32"><use xlink:href="#trash3"></svg></button>
+    <td style="padding: 0;">
+        <button class='btn' hx-get="{% url 'edit_match' match.pk %}" hx-target="closest tr" hx-swap="outerHTML"><i class="bi bi-pencil" style="font-size: 2rem"></i></button>
+        <button class='btn' hx-get="{% url 'clear_match' match.pk %}" hx-confirm="clear match data?" hx-target="closest tr" hx-swap="outerHTML" ><i class="bi bi-recycle" style="font-size: 1rem; color: red;"></i></svg></button>
     </td>
 </tr>
