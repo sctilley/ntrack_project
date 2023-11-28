@@ -39,7 +39,8 @@ class LeagueForm(forms.ModelForm):
         model = League
         fields = (
             'mtgFormat',
-            'myDeck'
+            'myDeck',
+            'myFlavor'
         )
 
 class FlavorForm(forms.ModelForm):

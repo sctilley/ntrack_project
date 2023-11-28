@@ -50,7 +50,7 @@ class League(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     dateCreated = models.DateTimeField(default=timezone.now)
     myDeck = models.ForeignKey(Deck, null=True, on_delete=models.CASCADE, related_name="mydeckl")
-    myFlavor = models.ForeignKey(Flavor, null=True, on_delete=models.CASCADE, related_name="myflavorl")
+    myFlavor = models.ForeignKey(Flavor, null=True, default=None, on_delete=models.CASCADE, related_name="myflavorl")
     isFinished = models.BooleanField('finished', default=False)
 
     def __str__(self):
