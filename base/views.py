@@ -1,4 +1,3 @@
-import imp
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse 
@@ -210,11 +209,12 @@ def add_league(request):
     except:
         current_league = League.objects.none()
 
-    if current_league.isFinished == True:
+    try: 
+        current_league.isFinished == True
         context = {
             'lform':LeagueForm()
         }
-    else:
+    except:
         context = {
 
         }

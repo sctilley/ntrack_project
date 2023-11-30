@@ -9,3 +9,10 @@ h1 {
 table.matchtable td {
   margin: 0;
 }
+
+th.fixedwidth {
+  width: 5%;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 2;
+}
